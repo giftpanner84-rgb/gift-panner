@@ -73,40 +73,41 @@
         </div>
     </div>
 
-    <script>
-        function addProduct(){
-            var div=document.createElement('div');
-            div.className='product-row';
-            div.innerHTML='<input type="text" class="p-name" placeholder="اسم المنتج" required><input type="text" class="p-asin" placeholder="ASIN" required><input type="number" class="qty" value="1" min="1" required><button type="button" class="del-btn" onclick="this.parentElement.remove()">حذف</button>';
-            document.getElementById('products').appendChild(div);
-        }
-        
-        document.getElementById('orderForm').addEventListener('submit',function(e){
-            e.preventDefault();
-            var name=document.getElementById('name').value;
-            var phone=document.getElementById('phone').value;
-            var alt=document.getElementById('altPhone').value||'غير محدد';
-            var address=document.getElementById('address').value;
-            
-            var msg='🛒 *طلب جديد من Gift Panner!* %0A%0A';
-            msg+='👤 *الاسم:* '+name+'%0A';
-            msg+='📱 *التليفون:* '+phone+'%0A';
-            msg+='📞 *بديل:* '+alt+'%0A';
-            msg+='📍 *العنوان:* '+address+'%0A%0A';
-            msg+='🛍️ *المنتجات:* %0A';
-            
-            var products=document.querySelectorAll('.product-row');
-            products.forEach(function(row,i){
-                var pname=row.querySelector('.p-name').value;
-                var pasin=row.querySelector('.p-asin').value;
-                var qty=row.querySelector('.qty').value;
-                msg+=(i+1)+'. *'+pname+'* %0A   ASIN: '+pasin+' | العدد: '+qty+'%0A';
-            });
-            
-            msg+='%0A⏰ *الوقت:* '+new Date().toLocaleString('ar-EG');
-            
-            window.open('https://wa.me/201017751682?text='+encodeURIComponent(msg),'_blank');
+   <script>
+// جلب المنتجات من السلة
+var cartProducts = JSON.parse(localStorage.getItem('cartProducts') || '[]');
+
+document.getElementById('orderForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=document.getElementById('name').value;
+    var phone=document.getElementById('phone').value;
+    var alt=document.getElementById('altPhone').value||'غير محدد';
+    var address=document.getElementById('address').value;
+    
+    var msg='🛒 *طلب جديد من Gift Panner!* %0A%0A';
+    msg+='👤 *الاسم:* '+name+'%0A';
+    msg+='📱 *التليفون:* '+phone+'%0A';
+    msg+='📞 *بديل:* '+alt+'%0A';
+    msg+='📍 *العنوان:* '+address+'%0A%0A';
+    
+    // إضافة المنتجات للرسالة
+    msg+='🛍️ *المنتجات:* %0A';
+    if(cartProducts.length > 0){
+        cartProducts.forEach(function(p, i){
+            msg+=(i+1)+'. *'+p.name+'* %0A';
+            msg+='   ASIN: '+p.asin+' | العدد: '+p.qty+'%0A';
         });
-    </script>
+    } else {
+        msg+='(تم الطلب من الموقع)%0A';
+    }
+    
+    msg+='%0A⏰ *الوقت:* '+new Date().toLocaleString('ar-EG');
+    
+    window.open('https://wa.me/201017751682?text='+encodeURIComponent(msg),'_blank');
+    
+    // مسح السلة بعد الطلب
+    localStorage.removeItem('cartProducts');
+});
+</script>
 </body>
 </html>
