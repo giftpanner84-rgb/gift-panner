@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Panner</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px;display:flex;justify-content:center;align-items:center}
+        .container{background:white;padding:40px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:500px}
+        h1{text-align:center;color:#333;margin-bottom:10px}
+        p.subtitle{text-align:center;color:#666;margin-bottom:30px}
+        .form-group{margin-bottom:20px}
+        label{display:block;margin-bottom:5px;color:#333;font-weight:bold}
+        input,textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px}
+        input:focus,textarea:focus{outline:none;border-color:#667eea}
+        .required{color:red}
+        button{width:100%;padding:15px;background:#764ba2;color:white;border:none;border-radius:8px;font-size:18px;cursor:pointer;margin-top:10px}
+        button:hover{background:#667eea}
+        .product-row{display:flex;gap:10px;margin-bottom:10px}
+        .product-row input{flex:1}
+        .product-row input.qty{width:70px;flex:none}
+        .add-btn{background:#28a745;margin-bottom:20px}
+        .del-btn{width:auto;background:#dc3545;padding:5px 10px}
+        .contact-info{margin-top:30px;padding-top:20px;border-top:2px solid #eee;text-align:center;color:#666}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 Gift Panner</h1>
+        <p class="subtitle">أدخل بياناتك لإتمام الطلب</p>
+        
+        <form id="orderForm">
+            <div class="form-group">
+                <label>الاسم بالكامل <span class="required">*</span></label>
+                <input type="text" id="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>رقم التليفون <span class="required">*</span></label>
+                <input type="tel" id="phone" required>
+            </div>
+            
+            <div class="form-group">
+                <label>رقم بديل</label>
+                <input type="tel" id="altPhone">
+            </div>
+            
+            <div class="form-group">
+                <label>العنوان بالتفصيل <span class="required">*</span></label>
+                <textarea id="address" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>المنتجات <span class="required">*</span></label>
+                <div id="products">
+                    <div class="product-row">
+                        <input type="text" class="p-name" placeholder="اسم المنتج" required>
+                        <input type="text" class="p-asin" placeholder="ASIN" required>
+                        <input type="number" class="qty" value="1" min="1" required>
+                    </div>
+                </div>
+                <button type="button" class="add-btn" onclick="addProduct()">+ إضافة منتج آخر</button>
+            </div>
+            
+            <button type="submit">📱 إتمام الطلب عبر واتساب</button>
+        </form>
+        
+        <div class="contact-info">
+            <p>📞 01017751682</p>
+            <p>📧 giftpanner84@gmail.com</p>
+            <p>📍 3 شارع الرصافة، الإسكندرية</p>
+        </div>
+    </div>
+
+    <script>
+        function addProduct(){
+            var div=document.createElement('div');
+            div.className='product-row';
+            div.innerHTML='<input type="text" class="p-name" placeholder="اسم المنتج" required><input type="text" class="p-asin" placeholder="ASIN" required><input type="number" class="qty" value="1" min="1" required><button type="button" class="del-btn" onclick="this.parentElement.remove()">حذف</button>';
+            document.getElementById('products').appendChild(div);
+        }
+        
+        document.getElementById('orderForm').addEventListener('submit',function(e){
+            e.preventDefault();
+            var name=document.getElementById('name').value;
+            var phone=document.getElementById('phone').value;
+            var alt=document.getElementById('altPhone').value||'غير محدد';
+            var address=document.getElementById('address').value;
+            
+            var msg='🛒 *طلب جديد من Gift Panner!* %0A%0A';
+            msg+='👤 *الاسم:* '+name+'%0A';
+            msg+='📱 *التليفون:* '+phone+'%0A';
+            msg+='📞 *بديل:* '+alt+'%0A';
+            msg+='📍 *العنوان:* '+address+'%0A%0A';
+            msg+='🛍️ *المنتجات:* %0A';
+            
+            var products=document.querySelectorAll('.product-row');
+            products.forEach(function(row,i){
+                var pname=row.querySelector('.p-name').value;
+                var pasin=row.querySelector('.p-asin').value;
+                var qty=row.querySelector('.qty').value;
+                msg+=(i+1)+'. *'+pname+'* %0A   ASIN: '+pasin+' | العدد: '+qty+'%0A';
+            });
+            
+            msg+='%0A⏰ *الوقت:* '+new Date().toLocaleString('ar-EG');
+            
+            window.open('https://wa.me/201017751682?text='+encodeURIComponent(msg),'_blank');
+        });
+    </script>
+</body>
+</html>
